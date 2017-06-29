@@ -32,7 +32,7 @@ class BucketList(db.Model):
     name = db.Column(db.String(100), unique=True)
     description = db.Column(db.Text)
     interests = db.Column(db.String(120))
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     date_created = db.Column(db.DateTime, default=datetime.utcnow())
     date_modified = db.Column(db.DateTime)
 
@@ -40,11 +40,11 @@ class BucketList(db.Model):
         return "<Bucketlist %r>" % self.name
 
 
-class Items(db.Model):
-    __tablename__ = "items"
+class Item(db.Model):
+    __tablename__ = "item"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    bucket_list = db.Column(db.Integer, db.ForeignKey('bucketlist.id'), nullable=False)
+    bucket_list = db.Column(db.Integer, db.ForeignKey('bucketlist.id'))
     name = db.Column(db.String(100), unique=True)
     category = db.Column(db.String(120))
     location = db.Column(db.String(150))
@@ -57,3 +57,14 @@ class Items(db.Model):
 
     def __repr__(self):
         return "<Items %r>" % self.name
+
+
+class ItemPhotos(db.Model):
+    __tablename__ = "images"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
+    url = db.Column(db.String(200), unique=True)
+    caption = db.Column(db.String(150))
+    date_created = db.Column(db.DateTime, default=datetime.utcnow())
+    date_modified = db.Column(db.DateTime)
