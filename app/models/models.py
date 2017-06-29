@@ -1,3 +1,4 @@
+import enum
 from datetime import datetime
 from flask_login import login_manager, UserMixin, login_required, login_user, logout_user
 from app.routes import db
@@ -40,6 +41,12 @@ class BucketList(db.Model):
         return "<Bucketlist %r>" % self.name
 
 
+class Status(enum.Enum):
+    Done = "complete"
+    Pending = "pending"
+    Planning = "in planning"
+
+
 class Item(db.Model):
     __tablename__ = "item"
 
@@ -49,8 +56,7 @@ class Item(db.Model):
     category = db.Column(db.String(120))
     location = db.Column(db.String(150))
     description = db.Column(db.Text)
-    category = db.Column(db.String(50))
-    status = db.Column(db.String(100))
+    status = db.Column(db.Enum(Status))
     date_accomplished = db.Column(db.DateTime)
     date_created = db.Column(db.DateTime, default=datetime.utcnow())
     date_modified = db.Column(db.DateTime)
