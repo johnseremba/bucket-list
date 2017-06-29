@@ -60,7 +60,29 @@ class Item(db.Model):
 
 
 class ItemPhotos(db.Model):
-    __tablename__ = "images"
+    __tablename__ = "item_photos"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
+    photo_id = db.Column(db.Integer, db.ForeignKey('photos.id'))
+
+    def __repr__(self):
+        return "<Item Photos %r>" % self.id
+
+
+class ProfilePhoto(db.Model):
+    __tablename__ = "profile_photo"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    photo_id = db.Column(db.Integer, db.ForeignKey('photos.id'))
+
+    def __repr__(self):
+        return "<Profile Photo %r>" % self.id
+
+
+class Photos(db.Model):
+    __tablename__ = "photos"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
@@ -68,3 +90,7 @@ class ItemPhotos(db.Model):
     caption = db.Column(db.String(150))
     date_created = db.Column(db.DateTime, default=datetime.utcnow())
     date_modified = db.Column(db.DateTime)
+    is_delete = db.Column(db.Boolen, default=False)
+
+    def __repr__(self):
+        return "<Photo %r>" % self.id
