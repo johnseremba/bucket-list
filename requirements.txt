@@ -1,3 +1,4 @@
+antiorm==1.2.1
 certifi==2017.4.17
 chardet==3.0.4
 click==6.7
@@ -5,7 +6,10 @@ coverage==4.4.1
 coveralls==1.1
 docopt==0.6.2
 Flask==0.12.2
+Flask-Login==0.4.0
+Flask-Script==2.0.5
 Flask-SQLAlchemy==2.2
+Flask-WTF==0.14.2
 idna==2.5
 itsdangerous==0.24
 Jinja2==2.9.6
@@ -16,3 +20,4 @@ SQLAlchemy==1.1.11
 travis==0.0.3
 urllib3==1.21.1
 Werkzeug==0.12.2
+WTForms==2.1
