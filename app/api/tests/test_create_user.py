@@ -1,10 +1,16 @@
 import unittest
+from app import create_app
+
+app = create_app('testing')
 
 
-class FlaskrTestCase(unittest.TestCase):
+class FlaskTestCase(unittest.TestCase):
 
-    def setUp(self):
-        self.my_app = True
+    def test_index(self):
+        tester = app.test_client(self)
+        response = tester.get('/homepage', content_type='html/text')
+        self.assertEqual(response.status_code, 200)
 
-    def test_true(self):
-        self.assertTrue(self.my_app)
+
+if __name__ == '__main__':
+    unittest.main()
