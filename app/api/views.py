@@ -1,24 +1,14 @@
-from flask import Flask, render_template, jsonify, g
-from flask_sqlalchemy import SQLAlchemy
-from requests import auth
+from flask import render_template, jsonify, g
 
-# from app import login_required
-from app.forms import LoginForm
+from app import create_app
+from app.api.forms import LoginForm
 from app.models import User
 
-
-def create_app():
-    return Flask(__name__)
-
-app = create_app()
-db = SQLAlchemy(app)
+app = create_app('development')
 
 
 @app.route('/')
 def index():
-    # admin = User('admin', 'admin@example.com')
-    # db.session.add(admin)
-    # db.session.commit()
     return render_template('index.html')
 
 

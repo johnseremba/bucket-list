@@ -1,4 +1,5 @@
 from flask_script import Manager, prompt_bool
+
 from app import app, db
 
 manager = Manager(app)
