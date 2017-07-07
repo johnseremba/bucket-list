@@ -1,14 +1,13 @@
-import enum
 from datetime import datetime
 from flask_login import UserMixin
 from app import db
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 
 
-class Status(enum.Enum):
-    Done = "complete"
-    Pending = "pending"
-    Planning = "planning"
+# class Status(enum.Enum):
+#     Done = "complete"
+#     Pending = "pending"
+#     Planning = "planning"
 
 
 class User(db.Model, UserMixin):
