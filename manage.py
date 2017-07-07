@@ -23,6 +23,7 @@ def drop_db():
         db.drop_all()
         print("Database dropped!")
 
+
 @manager.command
 def test():
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(test_create_user.FlaskTestCase)
