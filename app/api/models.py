@@ -1,13 +1,8 @@
 from datetime import datetime
 from flask_login import UserMixin
+from manage import app
 from app import db
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
-
-
-# class Status(enum.Enum):
-#     Done = "complete"
-#     Pending = "pending"
-#     Planning = "planning"
 
 
 class User(db.Model, UserMixin):
@@ -42,20 +37,24 @@ class User(db.Model, UserMixin):
         user = User.query.get(data['id'])
         return user
 
+# class Status(enum.Enum):
+#     Done = "complete"
+#     Pending = "pending"
+#     Planning = "planning"
 
 
-# class BucketList(db.Model):
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     name = db.Column(db.String(100), unique=True)
-#     description = db.Column(db.Text)
-#     interests = db.Column(db.String(120))
-#     date_created = db.Column(db.DateTime, default=datetime.utcnow())
-#     date_modified = db.Column(db.DateTime)
-#     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     items = db.relationship('Item', backref='bucketlist', lazy='dynamic')
-#
-#     def __repr__(self):
-#         return "<Bucketlist %r>" % self.name
+class BucketList(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), unique=True)
+    description = db.Column(db.Text)
+    interests = db.Column(db.String(120))
+    date_created = db.Column(db.DateTime, default=datetime.utcnow())
+    date_modified = db.Column(db.DateTime)
+    # created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # items = db.relationship('Item', backref='bucketlist', lazy='dynamic')
+
+    def __repr__(self):
+        return "<Bucketlist %r>" % self.name
 #
 #
 # class Item(db.Model):

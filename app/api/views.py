@@ -1,4 +1,5 @@
 from flask import Blueprint
+from app.api.models.models2 import Result
 
 mod = Blueprint('api', __name__)
 

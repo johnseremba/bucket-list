@@ -8,7 +8,7 @@ from app import create_app, db
 app = create_app('development')
 manager = Manager(app)
 migrate = Migrate(app, db)
-manager.add_command('migrate', MigrateCommand)
+manager.add_command('db', MigrateCommand)
 
 
 @manager.command
