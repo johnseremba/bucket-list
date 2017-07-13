@@ -9,7 +9,7 @@ env:
 addons:
   postgresql: "9.4"
 script:
-  - coverage run manage.py test
+  - nosetests
 notifications:
   slack: andela:
 after_success:
