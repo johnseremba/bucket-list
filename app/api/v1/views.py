@@ -1,3 +1,4 @@
+import datetime
 from flask import Blueprint, jsonify, request
 from werkzeug.exceptions import abort
 
@@ -106,8 +107,20 @@ def create_bucketlist():
 
 
 @mod.route('/bucketlists/', defaults={'id': None}, methods=['GET'])
-@mod.route('/bucketlists/<id>', methods=['GET'])
+@mod.route('/bucketlists/<id>', methods=['GET', 'PUT'])
 def get_all_bucketlists(id):
+    if request.method == "PUT":
+        bucketlist = BucketList.query.get(id)
+        if not bucketlist:
+            abort(400)  # Bucketlist not found
+        bucketlist.name = request.json.get('name')
+        bucketlist.description = request.json.get('description')
+        bucketlist.interests = request.json.get('interests')
+        bucketlist.date_modified = datetime.datetime.now()
+        db.session.add(bucketlist)
+        db.session.commit()
+        return "Success", 200
+
     if not id:
         bucketlists = list(BucketList.query.all())
     else:
