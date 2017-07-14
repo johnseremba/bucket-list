@@ -129,14 +129,20 @@ def get_all_bucketlists(id):
 
 
 @mod.route('/bucketlists/<id>/items/', methods=['POST'])
-def create_bucketlist_item():
+def create_bucketlist_item(id):
     name = request.json.get('name')
     description = request.json.get('description')
     status = request.json.get('status')
 
+    bucketlist = BucketList.query.filter_by(id=id).first()
+
+    if not bucketlist:
+        abort(400)
+
     if not name:
         abort(400)
-    new_item = Item(name=name, description=description, status=status)
+
+    new_item = Item(name=name, description=description, status=status, bucketlist=bucketlist.id)
     db.session.add(new_item)
     db.session.commit()
 

@@ -66,7 +66,7 @@ class BucketList(db.Model):
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), unique=True, nullabe=False)
+    name = db.Column(db.String(100), unique=True)
     description = db.Column(db.Text)
     status = db.Column(db.Text)
     date_accomplished = db.Column(db.DateTime)
