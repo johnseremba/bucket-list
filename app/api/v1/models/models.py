@@ -36,7 +36,7 @@ class User(db.Model, UserMixin):
     def generate_auth_token(self, user_id):
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=2000),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=9000),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
@@ -57,6 +57,7 @@ class User(db.Model, UserMixin):
             return "Signature expired, please log in again!"
         except jwt.InvalidTokenError:
             return "Invalid token! Try again."
+
 
 class BucketList(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

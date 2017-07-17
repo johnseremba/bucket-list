@@ -1,6 +1,10 @@
 import datetime
+from math import ceil
+
 from flask import (Blueprint, jsonify, request)
 from functools import wraps
+
+from sqlalchemy import desc
 
 mod = Blueprint('api', __name__)
 
@@ -152,7 +156,7 @@ def create_bucketlist():
             'items': []
         }
     }
-    return jsonify(result), 200
+    return jsonify(result), 201
 
 
 @mod.route('/bucketlists/', defaults={'id': None}, methods=['GET'])
@@ -192,15 +196,39 @@ def bucketlists(id):
             'message': 'Bucketlist deleted successfully.'
         }), 200
     elif request.method == "GET":
-        auth_token = request.headers.get('Authorization')
-        response = User.verify_auth_token(auth_token)
-        if not isinstance(response, str):
-            user = User.query.get(response)
+        user = get_current_user_id()
         if not id:
-            bucketlists = list(BucketList.query.filter_by(created_by=user.id))
+            result = {}
+            bucketlists = BucketList.query.filter_by(created_by=user.id).order_by(desc(BucketList.date_created))
+            counted = bucketlists.count()
+            start = request.args.get('start')
+            limit = request.args.get('limit')
+
+            limit = int(limit) if limit else 20
+            start = int(start) if start else 0
+            total_pages = ceil(counted / int(limit))
+            current_page = total_pages * (counted // start) if start else 1
+            prev_start = 0
+            next_start = 0
+
+            if ceil(start / limit) > 1:
+                new_start = start - limit
+                prev_start = new_start if new_start > 1 else 0
+
+            if current_page < total_pages:
+                new_limit = start + limit
+                next_start = new_limit if new_limit <= counted else counted
+
+            ls = bucketlists.limit(limit).offset(start)
+            result['total_pages'] = total_pages
+            result['num_results'] = counted
+            result['page'] = current_page
+            result['prev'] = prev_start
+            result['next'] = next_start
+            bucketlists = list(ls)
         else:
             bucketlists = list(BucketList.query.filter_by(created_by=user.id, id=id))
-        result = {}
+
         for bucketlist in bucketlists:
             result[bucketlist.name] = {
                 'description': bucketlist.description,
@@ -274,7 +302,7 @@ def crud_bucketlist_item(id, item_id):
             'status': 'success',
             'message': 'Bucketlist item created successfully!'
         }
-        return jsonify(result), 200
+        return jsonify(result), 201
 
 
 def get_bucketlist_items(bucketlist_id):
@@ -298,3 +326,13 @@ def get_bucketlist(bucketlist_id):
 
 def get_item(item_id):
     return Item.query.get(item_id)
+
+
+def get_current_user_id():
+    auth_token = request.headers.get('Authorization')
+    response = User.verify_auth_token(auth_token)
+    if not isinstance(response, str):
+        user = User.query.get(response)
+        return user
+    else:
+        return None
