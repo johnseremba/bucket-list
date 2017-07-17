@@ -36,7 +36,7 @@ class User(db.Model, UserMixin):
     def generate_auth_token(self, user_id):
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=60),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=2000),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
