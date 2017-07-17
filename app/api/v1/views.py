@@ -1,7 +1,7 @@
 import datetime
 from math import ceil
 
-from flask import (Blueprint, jsonify, request)
+from flask import (Blueprint, jsonify, request, url_for)
 from functools import wraps
 
 from sqlalchemy import desc
@@ -122,7 +122,7 @@ def get_user():
 @mod.route('/bucketlists/', methods=['POST'])
 @login_with_token
 def create_bucketlist():
-    created_by = request.json.get('created_by')
+    created_by = get_current_user_id().id
     name = request.json.get('name')
     description = request.json.get('description')
     interests = request.json.get('interests')
@@ -197,8 +197,8 @@ def bucketlists(id):
         }), 200
     elif request.method == "GET":
         user = get_current_user_id()
+        result = {}
         if not id:
-            result = {}
             bucketlists = BucketList.query.filter_by(created_by=user.id).order_by(desc(BucketList.date_created))
             counted = bucketlists.count()
             start = request.args.get('start')
@@ -207,7 +207,12 @@ def bucketlists(id):
             limit = int(limit) if limit else 20
             start = int(start) if start else 0
             total_pages = ceil(counted / int(limit))
-            current_page = total_pages * (counted // start) if start else 1
+            current_page = find_page(total_pages, limit, start)
+            if not current_page:
+                return jsonify({
+                    'status': 'fail',
+                    'message': 'invalid limit or offset value'
+                }), 400
             prev_start = 0
             next_start = 0
 
@@ -216,15 +221,21 @@ def bucketlists(id):
                 prev_start = new_start if new_start > 1 else 0
 
             if current_page < total_pages:
-                new_limit = start + limit
+                new_limit = (start + limit) + 1
                 next_start = new_limit if new_limit <= counted else counted
 
-            ls = bucketlists.limit(limit).offset(start)
+            base_url = request.url.rsplit("?", 2)[0] + '?limit={0}'.format(str(limit))
             result['total_pages'] = total_pages
             result['num_results'] = counted
             result['page'] = current_page
-            result['prev'] = prev_start
-            result['next'] = next_start
+
+            if current_page > 1:
+                result['prev'] = base_url + '&start={0}'.format(str(prev_start))
+
+            if next_start < counted:
+                result['next'] = base_url + '&start={0}'.format(str(next_start))
+
+            ls = bucketlists.limit(limit).offset(start)
             bucketlists = list(ls)
         else:
             bucketlists = list(BucketList.query.filter_by(created_by=user.id, id=id))
@@ -336,3 +347,11 @@ def get_current_user_id():
         return user
     else:
         return None
+
+
+def find_page(pages, limit, value):
+    page_range = [limit * page for page in range(1, pages + 1)]
+    for index, my_range in enumerate(page_range):
+        if value <= my_range:
+            return index + 1
+    return None
