@@ -1,8 +1,8 @@
-from datetime import datetime
+import datetime
+import jwt
 from flask_login import UserMixin
 from manage import app
 from app import db
-from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
 
 
@@ -14,8 +14,8 @@ class User(db.Model, UserMixin):
     surname = db.Column(db.String(100), nullable=False)
     first_name = db.Column(db.String(100), nullable=False)
     active = db.Column(db.Boolean, default=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow())
-    date_modified = db.Column(db.DateTime, default=datetime.utcnow())
+    date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    date_modified = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     bucketlist = db.relationship('BucketList', backref='user_bucket_list', lazy='dynamic')
 
     def __init__(self, surname, first_name, email, username):
@@ -33,29 +33,37 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
-    def generate_auth_token(self, expiration=600):
-        s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
-        return s.dumps({'id': self.id})
+    def generate_auth_token(self, user_id):
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=60),
+                'iat': datetime.datetime.utcnow(),
+                'sub': user_id
+            }
+            return jwt.encode(
+                payload,
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
 
     @staticmethod
-    def verify_auth_token(token):
-        s = Serializer(app.config['SECRET_KEY'])
+    def verify_auth_token(auth_token):
         try:
-            data = s.loads(token)
-        except SignatureExpired:
-            return None  # valid token, but expired
-        except BadSignature:
-            return None  # invalid token
-        user = User.query.get(data['id'])
-        return user
-
+            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return "Signature expired, please log in again!"
+        except jwt.InvalidTokenError:
+            return "Invalid token! Try again."
 
 class BucketList(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), unique=True)
     description = db.Column(db.Text, nullable=True)
     interests = db.Column(db.String(120), nullable=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow())
+    date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     date_modified = db.Column(db.DateTime)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     items = db.relationship('Item', backref='bucket_list_items', lazy='dynamic')
@@ -70,7 +78,7 @@ class Item(db.Model):
     description = db.Column(db.Text)
     status = db.Column(db.Text)
     date_accomplished = db.Column(db.DateTime)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow())
+    date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     date_modified = db.Column(db.DateTime)
     bucketlist = db.Column(db.Integer, db.ForeignKey('bucket_list.id'), nullable=False)
 
