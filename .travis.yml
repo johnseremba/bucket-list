@@ -11,6 +11,6 @@ addons:
 script:
   - coverage run manage.py test
 notifications:
-  slack: andela:
+  slack: andela:yvkk8NOcfPJkZQTqITrEsnsm
 after_success:
   coveralls
