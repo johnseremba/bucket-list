@@ -7,6 +7,25 @@ from app.api.v1.models.user import User
 from app import db
 
 
+def login_with_token(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        auth_token = request.headers.get('Authorization')
+        if auth_token:
+            response = User.verify_auth_token(auth_token)
+            if not isinstance(response, str) and User.query.filter_by(id=response).first():
+                return func(*args, **kwargs)
+            return jsonify({
+                'status': 'fail',
+                'message': response
+            }), 401
+        return jsonify({
+            'status': 'fail',
+            'message': 'Provide a valid authentication token'
+        }), 401
+    return wrapper
+
+
 @mod.route('/login', methods=['POST'])
 def login_user():
     username = request.json.get('username')
@@ -37,6 +56,7 @@ def login_user():
         'message': 'User successfully Logged in.',
         'auth_token': auth_token
     }
+
     return jsonify(result), 200
 
 
@@ -66,6 +86,7 @@ def register_user():
     db.session.add(user)
     db.session.commit()
     auth_token = user.generate_auth_token(user.id).decode()
+
     return jsonify({
         'status': 'success',
         'message': 'User registered successfully.',
@@ -92,6 +113,7 @@ def get_user():
             'email': user.email,
             'username': user.username
         }
+
     return jsonify(result), 200
 
 
@@ -103,22 +125,3 @@ def get_current_user_id():
         return user
     else:
         return None
-
-
-def login_with_token(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        auth_token = request.headers.get('Authorization')
-        if auth_token:
-            response = User.verify_auth_token(auth_token)
-            if not isinstance(response, str) and User.query.filter_by(id=response).first():
-                return func(*args, **kwargs)
-            return jsonify({
-                'status': 'fail',
-                'message': response
-            }), 401
-        return jsonify({
-            'status': 'fail',
-            'message': 'Provide a valid authentication token'
-        }), 401
-    return wrapper
