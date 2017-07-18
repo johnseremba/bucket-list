@@ -8,7 +8,8 @@ from sqlalchemy import desc
 
 mod = Blueprint('api', __name__)
 
-from app.api.v1.models.models import User, BucketList, Item
+from app.api.v1.models.user import User
+from app.api.v1.models.bucketlist import (BucketList, Item)
 from app import db
 
 
