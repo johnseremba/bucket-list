@@ -17,6 +17,6 @@ def create_app(environment):
 
     my_app.register_blueprint(auth_views, url_prefix='/api/v1/auth')
     my_app.register_blueprint(bucketlist_views, url_prefix='/api/v1/bucketlists')
-    my_app.register_blueprint(bucketlist_views, url_prefix='/api/v1/bucketlists/<bucketlist_id>/items')
+    my_app.register_blueprint(item_views, url_prefix='/api/v1/bucketlists/<bucketlist_id>/items')
 
     return my_app
