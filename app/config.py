@@ -11,6 +11,7 @@ class Config:
     TOKEN_EXPIRATION = 600
     MAX_PAGE_SIZE = 100
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JSON_SORT_KEYS = False
 
 
 class DevelopmentConfig(Config):

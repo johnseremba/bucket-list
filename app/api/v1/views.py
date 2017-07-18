@@ -213,27 +213,22 @@ def bucketlists(id):
                     'status': 'fail',
                     'message': 'invalid limit or offset value'
                 }), 400
-            prev_start = 0
-            next_start = 0
 
-            if ceil(start / limit) > 1:
-                new_start = start - limit
-                prev_start = new_start if new_start > 1 else 0
+            base_url = request.url.rsplit("?", 2)[0] + '?limit={0}'.format(limit)
 
             if current_page < total_pages:
-                new_limit = (start + limit) + 1
-                next_start = new_limit if new_limit <= counted else counted
+                new_start = (current_page * limit) + 1
+                next_start = new_start if new_start <= counted else counted
+                result['next'] = base_url + '&start={0}'.format(next_start)
 
-            base_url = request.url.rsplit("?", 2)[0] + '?limit={0}'.format(str(limit))
+            if current_page > 1:
+                new_start = (start - limit)
+                prev_start = new_start if new_start > 1 else 0
+                result['prev'] = base_url + '&start={0}'.format(prev_start)
+
             result['total_pages'] = total_pages
             result['num_results'] = counted
             result['page'] = current_page
-
-            if current_page > 1:
-                result['prev'] = base_url + '&start={0}'.format(str(prev_start))
-
-            if next_start < counted:
-                result['next'] = base_url + '&start={0}'.format(str(next_start))
 
             ls = bucketlists.limit(limit).offset(start)
             bucketlists = list(ls)
