@@ -96,10 +96,21 @@ def delete_bucketlist(id):
 @login_with_token
 def bucketlists(id):
     result = {}
-    if id:
-        bucketlists = get_bucketlists(id)
+    search_param = request.args.get("q")
+
+    if search_param:
+        bucketlists = get_bucketlists(param=search_param)
     else:
-        bucketlists = get_bucketlists()
+        if id:
+            bucketlists = get_bucketlists(id=id)
+        else:
+            bucketlists = get_bucketlists()
+
+    if not list(bucketlists):
+        return jsonify({
+            'status': 'fail',
+            'message': 'No bucketlists found.'
+        }), 404
 
     counted = bucketlists.count()
     offset = request.args.get("offset")
@@ -184,8 +195,15 @@ def get_bucketlist_items(bucketlist_id):
     return result
 
 
-def get_bucketlists(id=None):
+def get_bucketlists(**kwargs):
     user = get_current_user_id()
+    id = kwargs['id'] if 'id' in kwargs else None
+    param = kwargs['param'] if 'param' in kwargs else None
+
+    if param:
+        return BucketList.query.filter(BucketList.name.like("%{}%".format(param))).\
+            filter(BucketList.created_by == user.id).order_by(desc(BucketList.date_created))
+
     if id:
         return BucketList.query.filter_by(id=id, created_by=user.id).order_by(desc(BucketList.date_created))
     else:
