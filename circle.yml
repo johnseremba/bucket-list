@@ -1,0 +1,53 @@
+## Customize the test machine
+machine:
+
+  timezone:
+    Africa/Nairobi # Set the timezone
+
+  # Version of python to use
+  python:
+    version:
+      3.6.1
+
+  # Add some environment variables
+  environment:
+    CIRCLE_ENV: testing
+    DATABASE_URL: postgresql://localhost/bucketlist_test
+
+## Customize checkout
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init # use submodules
+
+## Customize dependencies
+dependencies:
+  pre:
+    - virtualenv --python=python3 --no-site-packages buc_env
+    - source buc_env/bin/activate
+    - pip install -r requirements.txt
+    - python manage.py db init_db
+
+## Customize database setup
+database:
+  override:
+    # replace CircleCI's generated database.yml
+    - cp config/database.yml.ci config/database.yml
+    - bundle exec rake db:create db:schema:load
+
+## Customize test commands
+test:
+  override:
+    - python manage.py db migrate
+    - nosetests --with-coverage --cover-package=app
+
+## Customize deployment commands
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: johnzbucketlist-pro
+  develop:
+    branch: develop
+    heroku:
+      appname: johnzbucketlist-staging
