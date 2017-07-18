@@ -26,6 +26,7 @@ dependencies:
     - virtualenv --python=python3 --no-site-packages buc_env
     - source buc_env/bin/activate
     - pip install -r requirements.txt
+    - python manage.py db migrate
     - python manage.py db init_db
 
 ## Customize database setup
