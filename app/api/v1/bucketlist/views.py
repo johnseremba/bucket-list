@@ -5,8 +5,8 @@ mod = Blueprint('bucketlist', __name__)
 import datetime
 from math import ceil
 from sqlalchemy import desc
-from app.api.v1.models.bucketlist import (BucketList, Item)
 from app import db
+from app.api.v1.models.bucketlist import (BucketList, Item)
 from app.api.v1.auth.views import login_with_token, get_current_user_id
 
 
@@ -23,8 +23,6 @@ def create_bucketlist():
             'status': 'fail',
             'message': 'Missing required parameters'
         }), 400
-
-    # user = User.query.filter_by(id=created_by).first()
 
     if not created_by:
         return jsonify({
@@ -50,8 +48,8 @@ def create_bucketlist():
     return jsonify(result), 201
 
 
-@mod.route('/bucketlists/', defaults={'id': None}, methods=['GET'])
-@mod.route('/bucketlists/<id>', methods=['GET', 'PUT', 'DELETE'])
+@mod.route('/', defaults={'id': None}, methods=['GET'])
+@mod.route('/<id>', methods=['GET', 'PUT', 'DELETE'])
 @login_with_token
 def bucketlists(id):
     if request.method == "PUT":
