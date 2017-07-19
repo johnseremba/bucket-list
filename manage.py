@@ -8,11 +8,11 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 
-#
-# @manager.command
-# def init_db():
-#     db.create_all()
-#     print("Database initialized")
+
+@manager.command
+def init_db():
+    db.create_all()
+    print("Database initialized")
 
 
 @manager.command
