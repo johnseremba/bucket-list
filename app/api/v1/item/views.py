@@ -56,9 +56,6 @@ def delete_item(bucketlist_id, item_id):
 @login_with_token
 def create_item(bucketlist_id):
     data = request.get_json(force=True)
-    name = data['name']
-    description = data['description']
-    status = data['status']
     bucketlist = get_bucketlist(bucketlist_id)
 
     if not bucketlist:
@@ -67,18 +64,22 @@ def create_item(bucketlist_id):
             'message': 'Bucketlist does not exist.'
         }), 400
 
-    if not name:
+    if not data:
         return jsonify({
             'status': 'fail',
             'message': 'Missing required parameters.'
         }), 400
+
+    name = data['name']
+    description = data['description']
+    status = data['status']
 
     new_item = Item(name=name, description=description, status=status, bucketlist=bucketlist.id)
     db.session.add(new_item)
     db.session.commit()
     result = {
         'status': 'success',
-        'message': 'Bucketlist item created successfully!'
+        'message': 'Bucketlist item created successfully.'
     }
     return jsonify(result), 201
 

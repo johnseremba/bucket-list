@@ -23,6 +23,12 @@ class BaseTestCase(TestCase):
         interests='Some interest'
     )
 
+    ITEM_FIELDS = dict(
+        name="Item name",
+        description="Some item description",
+        status="Pending"
+    )
+
     def setUp(self):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
