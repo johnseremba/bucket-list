@@ -23,7 +23,7 @@ dependencies:
     - pip install -r requirements.txt
     - createdb bucketlist_test
     - createdb bucketlist
-    - python manage.py db_init
+    - python manage.py init_db
     - python manage.py db upgrade
 
 ## Customize test commands
