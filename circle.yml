@@ -22,6 +22,7 @@ dependencies:
     - source buc_env/bin/activate
     - pip install -r requirements.txt
     - createdb bucketlist_test
+    - createdb bucketlist
     - python manage.py db upgrade
 
 ## Customize test commands
