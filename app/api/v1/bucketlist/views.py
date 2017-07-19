@@ -13,6 +13,7 @@ from app.api.v1.auth.views import (login_with_token, get_current_user_id)
 @mod.route('/', methods=['POST'])
 @login_with_token
 def create_bucketlist():
+    """ Create bucketlist object. Required params are name, description and interests """
     created_by = get_current_user_id().id
     data = request.get_json(force=True)
 
@@ -47,6 +48,10 @@ def create_bucketlist():
 @mod.route('/<id>', methods=['PUT'])
 @login_with_token
 def update_bucketlist(id):
+    """
+    Update bucketlist object. A bucketlist id should be passed as part of the url.
+    Params to update are; name, description and interests
+    """
     bucketlist = get_bucketlist(id)
 
     if not bucketlist:
@@ -72,6 +77,7 @@ def update_bucketlist(id):
 @mod.route('/<id>', methods=['DELETE'])
 @login_with_token
 def delete_bucketlist(id):
+    """ Deletes a bucketlist object given the id """
     bucketlist = get_bucketlist(id)
 
     if not bucketlist:
@@ -92,6 +98,13 @@ def delete_bucketlist(id):
 @mod.route('/<id>', methods=['GET'])
 @login_with_token
 def bucketlists(id):
+    """
+    Retrieves an individual bucketlist with its items given the id param.
+    Otherwise, it returns all bucketlists belonging to the currently logged in user.
+    The result is paginated with 20 bucketlists as the default and 100 max
+    :param id:
+    :return:
+    """
     result = {}
     search_param = request.args.get("q")
 
@@ -138,6 +151,13 @@ def bucketlists(id):
 
 
 def paginate_data(counted, limit, offset):
+    """
+    Custom pagination function.
+    :param counted:
+    :param limit:
+    :param offset:
+    :return: {}
+    """
     total_pages = ceil(counted / int(limit))
     current_page = find_page(total_pages, limit, offset)
 
@@ -165,11 +185,23 @@ def paginate_data(counted, limit, offset):
 
 
 def get_bucketlist(bucketlist_id):
+    """
+    Gets a bucketlist object given the id.
+    :param bucketlist_id:
+    :return:
+    """
     user = get_current_user_id()
     return BucketList.query.filter_by(created_by=user.id, id=bucketlist_id).first()
 
 
 def find_page(pages, limit, value):
+    """
+    Function to calculate and return the current page of a paginated result.
+    :param pages:
+    :param limit:
+    :param value:
+    :return:
+    """
     page_range = [limit * page for page in range(1, pages + 1)]
     for index, my_range in enumerate(page_range):
         if value <= my_range:
@@ -178,6 +210,11 @@ def find_page(pages, limit, value):
 
 
 def get_bucketlist_items(bucketlist_id):
+    """
+    Returns items belonging to a particular bucketlist, given the bucketlist id.
+    :param bucketlist_id:
+    :return:
+    """
     items = list(Item.query.filter_by(bucketlist=bucketlist_id))
     result = []
     for item in items:
@@ -193,6 +230,11 @@ def get_bucketlist_items(bucketlist_id):
 
 
 def get_bucketlists(**kwargs):
+    """
+    Searches and returns a bucket list object given its id or a search parameter
+    :param kwargs:
+    :return:
+    """
     user = get_current_user_id()
     id = kwargs['id'] if 'id' in kwargs else None
     param = kwargs['param'] if 'param' in kwargs else None
