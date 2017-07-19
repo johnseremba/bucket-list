@@ -36,7 +36,7 @@ class TestBucketlistItems(BaseTestCase):
             data = json.loads(response.data.decode())
 
             id = data['data']['id']
-            response = self.create_item(id, self.ITEM_FIELDS, token)
+            response = self.create_item(id, {}, token)
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 400)
