@@ -63,7 +63,7 @@ def login_user():
 @mod.route('/register', methods=['POST'])
 def register_user():
     surname = request.json.get('surname')
-    first_name = request.json.get('first_name')
+    firstname = request.json.get('firstname')
     email = request.json.get('email')
     username = request.json.get('username')
     password = request.json.get('password')
@@ -81,7 +81,7 @@ def register_user():
             'message': 'User already exists!'
         }), 403
 
-    user = User(surname=surname, first_name=first_name, email=email, username=username)
+    user = User(surname=surname, first_name=firstname, email=email, username=username)
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()
@@ -109,7 +109,7 @@ def get_user():
     for user in users:
         result[user.id] = {
             'surname': user.surname,
-            'first_name': user.first_name,
+            'firstname': user.first_name,
             'email': user.email,
             'username': user.username
         }
