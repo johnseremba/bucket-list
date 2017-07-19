@@ -23,6 +23,7 @@ class BaseTestCase(TestCase):
         self.app_context.push()
         self.client = self.app.test_client()
         db.create_all()
+
         self.test_user = self.create_user(dict(
             surname='Test',
             firstname='Tester',
@@ -52,3 +53,18 @@ class BaseTestCase(TestCase):
             )),
             content_type='application/json'
         )
+
+    def create_bucketlist(self, data, token):
+        return self.client.post(
+                '/api/v1/bucketlists/',
+                data=json.dumps(data),
+                headers=dict(
+                    Authorization=token,
+                    content_type='application/json'
+                )
+            )
+
+    def get_auth_token(self):
+        response = self.login_user(self.USER_CREDENTIALS['username'], self.USER_CREDENTIALS['password'])
+        data = json.loads(response.data.decode())
+        return data['auth_token']

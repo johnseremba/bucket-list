@@ -14,9 +14,10 @@ from app.api.v1.auth.views import (login_with_token, get_current_user_id)
 @login_with_token
 def create_bucketlist():
     created_by = get_current_user_id().id
-    name = request.json.get('name')
-    description = request.json.get('description')
-    interests = request.json.get('interests')
+    data = request.get_json(force=True)
+    name = data['name']
+    description = data['description']
+    interests = data['interests']
 
     if not created_by or not name:
         return jsonify({
@@ -36,7 +37,7 @@ def create_bucketlist():
 
     result = {
         'status': 'success',
-        'message': 'Bucketlist created successfully',
+        'message': 'Bucketlist created successfully.',
         'data': {
             'id': bucketlist.id,
             'name': bucketlist.name,
