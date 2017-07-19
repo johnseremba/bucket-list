@@ -4,6 +4,7 @@ python:
 install:
   - pip install -r requirements.txt
   - createdb bucketlist
+  - createdb bucketlist_test
 env:
   - DB=postgres
 addons:
