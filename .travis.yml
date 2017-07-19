@@ -4,12 +4,13 @@ python:
 install:
   - pip install -r requirements.txt
   - createdb bucketlist
+  - createdb bucketlist_test
 env:
   - DB=postgres
 addons:
   postgresql: "9.4"
 script:
-  - coverage run manage.py test
+  - nosetests --with-coverage --cover-package=app
 notifications:
   slack: andela:yvkk8NOcfPJkZQTqITrEsnsm
 after_success:

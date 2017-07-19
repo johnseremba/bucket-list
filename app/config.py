@@ -24,6 +24,10 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist_prod'
 
 
+class StagingConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist_stage'
+
+
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist_test'
@@ -31,5 +35,7 @@ class TestingConfig(Config):
 
 configuration = dict(
     development=DevelopmentConfig,
-    testing=TestingConfig
+    testing=TestingConfig,
+    production=ProductionConfig,
+    staging=StagingConfig
 )
