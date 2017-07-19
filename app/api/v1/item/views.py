@@ -70,7 +70,7 @@ def create_item(bucketlist_id):
     if not name:
         return jsonify({
             'status': 'fail',
-            'message': 'missing required parameters.'
+            'message': 'Missing required parameters.'
         }), 400
 
     new_item = Item(name=name, description=description, status=status, bucketlist=bucketlist.id)

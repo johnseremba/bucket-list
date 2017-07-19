@@ -17,6 +17,12 @@ class BaseTestCase(TestCase):
         email='test1@testing.com'
     )
 
+    BUCKETLIST_FIELDS = dict(
+        name='Bucketlist',
+        description='Some Description',
+        interests='Some interest'
+    )
+
     def setUp(self):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
@@ -59,8 +65,8 @@ class BaseTestCase(TestCase):
                 '/api/v1/bucketlists/',
                 data=json.dumps(data),
                 headers=dict(
-                    Authorization=token,
-                    content_type='application/json'
+                    content_type='application/json',
+                    Authorization=token
                 )
             )
 

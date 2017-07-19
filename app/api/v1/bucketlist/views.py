@@ -15,21 +15,16 @@ from app.api.v1.auth.views import (login_with_token, get_current_user_id)
 def create_bucketlist():
     created_by = get_current_user_id().id
     data = request.get_json(force=True)
+
+    if not created_by or not data:
+        return jsonify({
+            'status': 'fail',
+            'message': 'Missing required parameters.'
+        }), 400
+
     name = data['name']
     description = data['description']
     interests = data['interests']
-
-    if not created_by or not name:
-        return jsonify({
-            'status': 'fail',
-            'message': 'Missing required parameters'
-        }), 400
-
-    if not created_by:
-        return jsonify({
-            'status': 'fail',
-            'message': 'User does not exist'
-        }), 404
 
     bucketlist = BucketList(created_by=created_by, name=name, description=description, interests=interests)
     db.session.add(bucketlist)
@@ -70,7 +65,7 @@ def update_bucketlist(id):
 
     return jsonify({
         'status': 'success',
-        'message': 'Bucketlist updated successfully'
+        'message': 'Bucketlist updated successfully.'
     }), 200
 
 
@@ -111,7 +106,7 @@ def bucketlists(id):
     if not list(bucketlists):
         return jsonify({
             'status': 'fail',
-            'message': 'No bucketlists found.'
+            'message': 'No bucketlist(s) found.'
         }), 404
 
     counted = bucketlists.count()
@@ -123,6 +118,12 @@ def bucketlists(id):
     pagination_result = paginate_data(counted, limit, offset)
     bucketlists = list(bucketlists.limit(limit).offset(offset))
 
+    response = {
+        'status': 'success',
+        'message': 'Bucketlist(s) retrieved successfully.',
+        'pagination': pagination_result if pagination_result else {},
+        'data': result
+    }
     for bucketlist in bucketlists:
         result[bucketlist.name] = {
             'description': bucketlist.description,
@@ -133,12 +134,6 @@ def bucketlists(id):
             'created_by': bucketlist.created_by,
             'id': bucketlist.id
         }
-    response = {
-        'message': 'Bucketlists retrieved successfully.',
-        'status': 'success',
-        'pagination': pagination_result if pagination_result else {},
-        'data': result
-    }
     return jsonify(response), 200
 
 
