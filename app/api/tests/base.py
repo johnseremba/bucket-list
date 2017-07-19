@@ -1,7 +1,5 @@
 from unittest import TestCase
-
 from flask import json
-
 from app import create_app, db
 
 
