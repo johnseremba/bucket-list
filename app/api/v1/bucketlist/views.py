@@ -85,7 +85,7 @@ def delete_bucketlist(id):
     return jsonify({
         'status': 'success',
         'message': 'Bucketlist deleted successfully.'
-    }), 204
+    }), 202
 
 
 @mod.route('/', defaults={'id': None}, methods=['GET'])

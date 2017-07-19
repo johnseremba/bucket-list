@@ -94,3 +94,39 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(response.status_code, 404)
             self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'No bucketlist(s) found.')
+
+    def test_delete_bucketlist(self):
+        with self.client:
+            token = self.get_auth_token()
+            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
+            data = json.loads(response.data.decode())
+            id = data['data']['id']
+
+            response = self.client.delete(
+                '/api/v1/bucketlists/{}'.format(id),
+                headers=dict(
+                    content_type='application/json',
+                    Authorization=token
+                )
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 202)
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['message'], 'Bucketlist deleted successfully.')
+
+    def test_delete_bucketlist_wrong_id(self):
+        with self.client:
+            token = self.get_auth_token()
+            id = 34
+
+            response = self.client.delete(
+                '/api/v1/bucketlists/{}'.format(id),
+                headers=dict(
+                    content_type='application/json',
+                    Authorization=token
+                )
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertEqual(data['status'], 'fail')
+            self.assertEqual(data['message'], 'Bucketlist not found.')
