@@ -9,11 +9,6 @@ machine:
     version:
       3.6.1
 
-  # Add some environment variables
-  environment:
-    CIRCLE_ENV: app.config.TestingConfig
-    DATABASE_URL: postgresql://localhost/bucketlist
-
 ## Customize checkout
 checkout:
   post:
@@ -26,23 +21,15 @@ dependencies:
     - virtualenv --python=python3 --no-site-packages buc_env
     - source buc_env/bin/activate
     - pip install -r requirements.txt
-    - createdb bucketlist
     - createdb bucketlist_test
-    - python manage.py db init_db
-    - python manage.py db migrate
-
-## Customize database setup
-database:
-  override:
-    # replace CircleCI's generated database.yml
-    - cp config/database.yml.ci config/database.yml
-    - bundle exec rake db:create db:schema:load
+    - python manage.py db upgrade
 
 ## Customize test commands
 test:
   override:
     - python manage.py db migrate
-    - nosetests --with-coverage --cover-package=app
+    - nosetests --rednose --with-coverage --cover-package=app --cover-erase
+    - COVERALLS_REPO_TOKEN=z6p6xSjXWbrYsrsyAufAql4upUr9Wxatf coveralls
 
 ## Customize deployment commands
 deployment:
