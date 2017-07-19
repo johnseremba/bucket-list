@@ -15,14 +15,7 @@ class TestBucketlist(BaseTestCase):
     def test_create(self):
         with self.client:
             token = self.get_auth_token()
-            response = self.client.post(
-                '/api/v1/bucketlists/',
-                data=json.dumps(dict(self.BUCKETLIST_FIELDS)),
-                headers=dict(
-                    content_type='application/json',
-                    Authorization=token
-                )
-            )
+            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)
             self.assertEqual(data['status'], 'success')

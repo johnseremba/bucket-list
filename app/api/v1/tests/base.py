@@ -76,6 +76,16 @@ class BaseTestCase(TestCase):
                 )
             )
 
+    def create_item(self, id, data, token):
+        return self.client.post(
+                '/api/v1/bucketlists/{}/items/'.format(id),
+                data=json.dumps(data),
+                headers=dict(
+                    content_type='application/json',
+                    Authorization=token
+                )
+            )
+
     def get_auth_token(self):
         response = self.login_user(self.USER_CREDENTIALS['username'], self.USER_CREDENTIALS['password'])
         data = json.loads(response.data.decode())

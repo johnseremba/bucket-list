@@ -9,16 +9,9 @@ class TestBucketlistItems(BaseTestCase):
             response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
             data = json.loads(response.data.decode())
             id = data['data']['id']
-
-            response = self.client.post(
-                '/api/v1/bucketlists/{}/items/'.format(id),
-                data=json.dumps(self.ITEM_FIELDS),
-                headers=dict(
-                    content_type='application/json',
-                    Authorization=token
-                )
-            )
+            response = self.create_item(id, self.ITEM_FIELDS, token)
             data = json.loads(response.data.decode())
+
             self.assertEqual(response.status_code, 201)
             self.assertEqual(data['status'], 'success')
             self.assertEqual(data['message'], 'Bucketlist item created successfully.')
@@ -27,16 +20,9 @@ class TestBucketlistItems(BaseTestCase):
         with self.client:
             token = self.get_auth_token()
             id = 2
-
-            response = self.client.post(
-                '/api/v1/bucketlists/{}/items/'.format(id),
-                data=json.dumps(self.ITEM_FIELDS),
-                headers=dict(
-                    content_type='application/json',
-                    Authorization=token
-                )
-            )
+            response = self.create_item(id, self.ITEM_FIELDS, token)
             data = json.loads(response.data.decode())
+
             self.assertEqual(response.status_code, 400)
             self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'Bucketlist does not exist.')
@@ -47,16 +33,39 @@ class TestBucketlistItems(BaseTestCase):
             response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
             data = json.loads(response.data.decode())
             id = data['data']['id']
+            response = self.create_item(id, self.ITEM_FIELDS, token)
+            data = json.loads(response.data.decode())
 
-            response = self.client.post(
-                '/api/v1/bucketlists/{}/items/'.format(id),
-                data=json.dumps({}),
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(data['status'], 'fail')
+            self.assertEqual(data['message'], 'Missing required parameters.')
+
+    def test_update_item(self):
+        with self.client:
+            token = self.get_auth_token()
+            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
+            data = json.loads(response.data.decode())
+            id = data['data']['id']
+            response = self.create_item(id, self.ITEM_FIELDS, token)
+            data = json.loads(response.data.decode())
+            item_id = data['item_id']
+            response = self.client.put(
+                '/api/v1/bucketlists/{}/items/{}'.format(id, item_id),
+                data=json.dumps(dict(
+                    name='Item Name Updated',
+                    description='Some Description updated',
+                    status='complete'
+                )),
                 headers=dict(
                     content_type='application/json',
                     Authorization=token
                 )
             )
             data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(data['status'], 'fail')
-            self.assertEqual(data['message'], 'Missing required parameters.')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['message'], 'Bucketlist item updated successfully.')
+            self.assertEqual(data['data']['name'], 'Item Name Updated')
+            self.assertEqual(data['data']['description'], 'Some Description updated')
+            self.assertEqual(data['data']['status'], 'complete')
+            self.assertEqual(data['data']['item_id'], item_id)

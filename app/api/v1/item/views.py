@@ -28,7 +28,13 @@ def update_item(bucketlist_id, item_id):
 
     return jsonify({
         'status': 'success',
-        'message': 'Bucketlist item updated successfully.'
+        'message': 'Bucketlist item updated successfully.',
+        'data': {
+            'name': item.name,
+            'description': item.description,
+            'status': item.status,
+            'item_id': item.id
+        }
     }), 200
 
 
@@ -79,7 +85,8 @@ def create_item(bucketlist_id):
     db.session.commit()
     result = {
         'status': 'success',
-        'message': 'Bucketlist item created successfully.'
+        'message': 'Bucketlist item created successfully.',
+        'item_id': new_item.id
     }
     return jsonify(result), 201
 
@@ -87,6 +94,6 @@ def create_item(bucketlist_id):
 def get_item(bucketlist_id, item_id):
     bucketlist = get_bucketlist(bucketlist_id)
     if bucketlist:
-        return Item.query.filter_by(id=item_id, bucketlist=bucketlist_id)
+        return Item.query.filter_by(id=item_id, bucketlist=bucketlist_id).first()
     else:
         return None
