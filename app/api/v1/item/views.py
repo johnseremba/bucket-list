@@ -16,7 +16,7 @@ def update_item(bucketlist_id, item_id):
     if not item or not get_bucketlist(bucketlist_id):
         return jsonify({
             'status': 'fail',
-            'message': 'Bucketlist item not found'
+            'message': 'Bucketlist item not found.'
         }), 404
 
     data = request.get_json(force=True)

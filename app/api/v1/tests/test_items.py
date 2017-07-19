@@ -69,3 +69,26 @@ class TestBucketlistItems(BaseTestCase):
             self.assertEqual(data['data']['description'], 'Some Description updated')
             self.assertEqual(data['data']['status'], 'complete')
             self.assertEqual(data['data']['item_id'], item_id)
+
+    def test_update_item_wrong_id(self):
+        with self.client:
+            token = self.get_auth_token()
+            id = 2
+            item_id = 2
+            response = self.client.put(
+                '/api/v1/bucketlists/{}/items/{}'.format(id, item_id),
+                data=json.dumps(dict(
+                    name='Item Name Updated',
+                    description='Some Description updated',
+                    status='complete'
+                )),
+                headers=dict(
+                    content_type='application/json',
+                    Authorization=token
+                )
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertEqual(data['status'], 'fail')
+            self.assertEqual(data['message'], 'Bucketlist item not found.')
+
