@@ -38,13 +38,8 @@ def login_user():
         }), 400
 
     user = User.query.filter_by(username=username).first()
-    if not user:
-        return jsonify({
-            'status': 'fail',
-            'message': 'User not found'
-        }), 404
 
-    if not user.verify_password(password):
+    if not user or not user.verify_password(password):
         return jsonify({
             'status': 'fail',
             'message': 'Invalid username or password'
@@ -71,7 +66,7 @@ def register_user():
     if not username and not password:
         return jsonify({
             'status': 'fail',
-            'message': 'Missing required parameters'
+            'message': 'Missing required parameters.'
         }), 400
 
     if User.query.filter_by(username=username).first() or \
