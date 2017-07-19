@@ -46,7 +46,7 @@ def delete_item(bucketlist_id, item_id):
     if not item or not get_bucketlist(bucketlist_id):
         return jsonify({
             'status': 'fail',
-            'message': 'Bucketlist item not found'
+            'message': 'Bucketlist item not found.'
         }), 404
 
     db.session.delete(item)
@@ -55,7 +55,7 @@ def delete_item(bucketlist_id, item_id):
     return jsonify({
         'status': 'success',
         'message': 'Bucketlist item deleted successfully.'
-    }), 204
+    }), 202
 
 
 @mod.route('/', methods=['POST'])
