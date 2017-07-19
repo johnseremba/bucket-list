@@ -60,9 +60,10 @@ def update_bucketlist(id):
             'message': 'Bucketlist not found.'
         }), 404
 
-    bucketlist.name = request.json.get('name')
-    bucketlist.description = request.json.get('description')
-    bucketlist.interests = request.json.get('interests')
+    data = request.get_json(force=True)
+    bucketlist.name = data['name']
+    bucketlist.description = data['description']
+    bucketlist.interests = data['interests']
     bucketlist.date_modified = datetime.datetime.now()
     db.session.add(bucketlist)
     db.session.commit()

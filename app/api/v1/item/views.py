@@ -19,9 +19,10 @@ def update_item(bucketlist_id, item_id):
             'message': 'Bucketlist item not found'
         }), 404
 
-    item.name = request.json.get('name')
-    item.description = request.json.get('description')
-    item.status = request.json.get('status')
+    data = request.get_json(force=True)
+    item.name = data['name']
+    item.description = data['description']
+    item.status = data['status']
     db.session.add(item)
     db.session.commit()
 
@@ -54,9 +55,10 @@ def delete_item(bucketlist_id, item_id):
 @mod.route('/', methods=['POST'])
 @login_with_token
 def create_item(bucketlist_id):
-    name = request.json.get('name')
-    description = request.json.get('description')
-    status = request.json.get('status')
+    data = request.get_json(force=True)
+    name = data['name']
+    description = data['description']
+    status = data['status']
     bucketlist = get_bucketlist(bucketlist_id)
 
     if not bucketlist:

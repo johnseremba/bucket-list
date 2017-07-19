@@ -28,8 +28,9 @@ def login_with_token(func):
 
 @mod.route('/login', methods=['POST'])
 def login_user():
-    username = request.json.get('username')
-    password = request.json.get('password')
+    data = request.get_json(force=True)
+    username = data['username']
+    password = data['password']
 
     if not username or not password:
         return jsonify({
@@ -57,13 +58,15 @@ def login_user():
 
 @mod.route('/register', methods=['POST'])
 def register_user():
-    surname = request.json.get('surname')
-    firstname = request.json.get('firstname')
-    email = request.json.get('email')
-    username = request.json.get('username')
-    password = request.json.get('password')
+    data = request.get_json(force=True)
+    if data:
+        surname = data['surname']
+        firstname = data['firstname']
+        email = data['email']
+        username = data['username']
+        password = data['password']
 
-    if not username and not password:
+    if not data or not data['username'] and not data['password']:
         return jsonify({
             'status': 'fail',
             'message': 'Missing required parameters.'
