@@ -7,3 +7,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The Bucket list application organizes for you the tasks that you hope to do before you die, and helps you keep track of your life goals.
+
+Staging url: https://johnzbucketlist-staging.herokuapp.com/
