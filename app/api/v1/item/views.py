@@ -16,7 +16,7 @@ def update_item(bucketlist_id, item_id):
     if not item or not get_bucketlist(bucketlist_id):
         return jsonify({
             'status': 'fail',
-            'message': 'Bucketlist item not found'
+            'message': 'Bucketlist item not found.'
         }), 404
 
     data = request.get_json(force=True)
@@ -28,7 +28,13 @@ def update_item(bucketlist_id, item_id):
 
     return jsonify({
         'status': 'success',
-        'message': 'Bucketlist item updated successfully.'
+        'message': 'Bucketlist item updated successfully.',
+        'data': {
+            'name': item.name,
+            'description': item.description,
+            'status': item.status,
+            'item_id': item.id
+        }
     }), 200
 
 
@@ -40,7 +46,7 @@ def delete_item(bucketlist_id, item_id):
     if not item or not get_bucketlist(bucketlist_id):
         return jsonify({
             'status': 'fail',
-            'message': 'Bucketlist item not found'
+            'message': 'Bucketlist item not found.'
         }), 404
 
     db.session.delete(item)
@@ -49,16 +55,13 @@ def delete_item(bucketlist_id, item_id):
     return jsonify({
         'status': 'success',
         'message': 'Bucketlist item deleted successfully.'
-    }), 204
+    }), 202
 
 
 @mod.route('/', methods=['POST'])
 @login_with_token
 def create_item(bucketlist_id):
     data = request.get_json(force=True)
-    name = data['name']
-    description = data['description']
-    status = data['status']
     bucketlist = get_bucketlist(bucketlist_id)
 
     if not bucketlist:
@@ -67,18 +70,23 @@ def create_item(bucketlist_id):
             'message': 'Bucketlist does not exist.'
         }), 400
 
-    if not name:
+    if not data:
         return jsonify({
             'status': 'fail',
             'message': 'Missing required parameters.'
         }), 400
+
+    name = data['name']
+    description = data['description']
+    status = data['status']
 
     new_item = Item(name=name, description=description, status=status, bucketlist=bucketlist.id)
     db.session.add(new_item)
     db.session.commit()
     result = {
         'status': 'success',
-        'message': 'Bucketlist item created successfully!'
+        'message': 'Bucketlist item created successfully.',
+        'item_id': new_item.id
     }
     return jsonify(result), 201
 
@@ -86,6 +94,6 @@ def create_item(bucketlist_id):
 def get_item(bucketlist_id, item_id):
     bucketlist = get_bucketlist(bucketlist_id)
     if bucketlist:
-        return Item.query.filter_by(id=item_id, bucketlist=bucketlist_id)
+        return Item.query.filter_by(id=item_id, bucketlist=bucketlist_id).first()
     else:
         return None

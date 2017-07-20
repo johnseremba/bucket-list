@@ -2,47 +2,64 @@ from flask import json
 from app.api.v1.tests.base import BaseTestCase
 
 
-class TestBucketlist(BaseTestCase):
-    def test_no_authentication_token(self):
-        with self.client:
-            token = ''
-            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 401)
-            self.assertEqual(data['status'], 'fail')
-            self.assertEqual(data['message'], 'Provide a valid authentication token')
-
-    def test_create(self):
-        with self.client:
-            token = self.get_auth_token()
-            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 201)
-            self.assertEqual(data['status'], 'success')
-            self.assertEqual(data['message'], 'Bucketlist created successfully.')
-
-    def test_missing_params(self):
-        with self.client:
-            token = self.get_auth_token()
-            response = self.create_bucketlist({}, token)
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(data['status'], 'fail')
-            self.assertEqual(data['message'], 'Missing required parameters.')
-
-    def test_update_bucketlist(self):
+class TestBucketlistItems(BaseTestCase):
+    def test_create_item(self):
         with self.client:
             token = self.get_auth_token()
             response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
             data = json.loads(response.data.decode())
             id = data['data']['id']
 
+            response = self.create_item(id, self.ITEM_FIELDS, token)
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['message'], 'Bucketlist item created successfully.')
+
+    def test_wrong_bucketlist_id(self):
+        with self.client:
+            token = self.get_auth_token()
+            id = 2
+
+            response = self.create_item(id, self.ITEM_FIELDS, token)
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(data['status'], 'fail')
+            self.assertEqual(data['message'], 'Bucketlist does not exist.')
+
+    def test_missing_params(self):
+        with self.client:
+            token = self.get_auth_token()
+            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
+            data = json.loads(response.data.decode())
+
+            id = data['data']['id']
+            response = self.create_item(id, {}, token)
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(data['status'], 'fail')
+            self.assertEqual(data['message'], 'Missing required parameters.')
+
+    def test_update_item(self):
+        with self.client:
+            token = self.get_auth_token()
+            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
+            data = json.loads(response.data.decode())
+            id = data['data']['id']
+
+            response = self.create_item(id, self.ITEM_FIELDS, token)
+            data = json.loads(response.data.decode())
+            item_id = data['item_id']
+
             response = self.client.put(
-                '/api/v1/bucketlists/{}'.format(id),
+                '/api/v1/bucketlists/{}/items/{}'.format(id, item_id),
                 data=json.dumps(dict(
-                    name='Bucketlist Updated',
+                    name='Item Name Updated',
                     description='Some Description updated',
-                    interests='Some interests updated'
+                    status='complete'
                 )),
                 headers=dict(
                     content_type='application/json',
@@ -52,32 +69,24 @@ class TestBucketlist(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
             self.assertEqual(data['status'], 'success')
-            self.assertEqual(data['message'], 'Bucketlist updated successfully.')
+            self.assertEqual(data['message'], 'Bucketlist item updated successfully.')
+            self.assertEqual(data['data']['name'], 'Item Name Updated')
+            self.assertEqual(data['data']['description'], 'Some Description updated')
+            self.assertEqual(data['data']['status'], 'complete')
+            self.assertEqual(data['data']['item_id'], item_id)
 
-    def test_get_bucketlist(self):
+    def test_update_item_wrong_id(self):
         with self.client:
             token = self.get_auth_token()
-            response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
-            data = json.loads(response.data.decode())
-            id = data['data']['id']
-
-            response = self.client.get(
-                '/api/v1/bucketlists/{}'.format(id),
-                headers=dict(
-                    content_type='application/json',
-                    Authorization=token
-                )
-            )
-            data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['status'], 'success')
-            self.assertEqual(data['message'], 'Bucketlist(s) retrieved successfully.')
-
-    def test_get_bucketlist_wrong_id(self):
-        with self.client:
-            token = self.get_auth_token()
-            response = self.client.get(
-                '/api/v1/bucketlists/{}'.format(23),
+            id = 2
+            item_id = 2
+            response = self.client.put(
+                '/api/v1/bucketlists/{}/items/{}'.format(id, item_id),
+                data=json.dumps(dict(
+                    name='Item Name Updated',
+                    description='Some Description updated',
+                    status='complete'
+                )),
                 headers=dict(
                     content_type='application/json',
                     Authorization=token
@@ -86,17 +95,21 @@ class TestBucketlist(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
             self.assertEqual(data['status'], 'fail')
-            self.assertEqual(data['message'], 'No bucketlist(s) found.')
+            self.assertEqual(data['message'], 'Bucketlist item not found.')
 
-    def test_delete_bucketlist(self):
+    def test_item_delete(self):
         with self.client:
             token = self.get_auth_token()
             response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
             data = json.loads(response.data.decode())
             id = data['data']['id']
 
+            response = self.create_item(id, self.ITEM_FIELDS, token)
+            data = json.loads(response.data.decode())
+            item_id = data['item_id']
+
             response = self.client.delete(
-                '/api/v1/bucketlists/{}'.format(id),
+                '/api/v1/bucketlists/{}/items/{}'.format(id, item_id),
                 headers=dict(
                     content_type='application/json',
                     Authorization=token
@@ -105,15 +118,16 @@ class TestBucketlist(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 202)
             self.assertEqual(data['status'], 'success')
-            self.assertEqual(data['message'], 'Bucketlist deleted successfully.')
+            self.assertEqual(data['message'], 'Bucketlist item deleted successfully.')
 
-    def test_delete_bucketlist_wrong_id(self):
+    def test_item_delete_wrong_id(self):
         with self.client:
             token = self.get_auth_token()
-            id = 34
+            id = 2
+            item_id = 2
 
             response = self.client.delete(
-                '/api/v1/bucketlists/{}'.format(id),
+                '/api/v1/bucketlists/{}/items/{}'.format(id, item_id),
                 headers=dict(
                     content_type='application/json',
                     Authorization=token
@@ -122,4 +136,4 @@ class TestBucketlist(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
             self.assertEqual(data['status'], 'fail')
-            self.assertEqual(data['message'], 'Bucketlist not found.')
+            self.assertEqual(data['message'], 'Bucketlist item not found.')

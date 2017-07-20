@@ -10,7 +10,7 @@ env:
 addons:
   postgresql: "9.4"
 script:
-  - nosetests --with-coverage --cover-package=app
+  - nosetests --with-coverage --cover-package=app.api
 notifications:
   slack: andela:yvkk8NOcfPJkZQTqITrEsnsm
 after_success:

@@ -23,6 +23,12 @@ class BaseTestCase(TestCase):
         interests='Some interest'
     )
 
+    ITEM_FIELDS = dict(
+        name="Item name",
+        description="Some item description",
+        status="Pending"
+    )
+
     def setUp(self):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
@@ -63,6 +69,16 @@ class BaseTestCase(TestCase):
     def create_bucketlist(self, data, token):
         return self.client.post(
                 '/api/v1/bucketlists/',
+                data=json.dumps(data),
+                headers=dict(
+                    content_type='application/json',
+                    Authorization=token
+                )
+            )
+
+    def create_item(self, id, data, token):
+        return self.client.post(
+                '/api/v1/bucketlists/{}/items/'.format(id),
                 data=json.dumps(data),
                 headers=dict(
                     content_type='application/json',

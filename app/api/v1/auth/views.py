@@ -8,6 +8,8 @@ from app import db
 
 
 def login_with_token(func):
+    """ Decorator function to ensure that methods that require authentication are protected from unauthorized access """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         auth_token = request.headers.get('Authorization')
@@ -28,6 +30,8 @@ def login_with_token(func):
 
 @mod.route('/login', methods=['POST'])
 def login_user():
+    """ Login function requires username and password as mandatory variables """
+
     data = request.get_json(force=True)
     username = data['username']
     password = data['password']
@@ -58,19 +62,20 @@ def login_user():
 
 @mod.route('/register', methods=['POST'])
 def register_user():
-    data = request.get_json(force=True)
-    if data:
-        surname = data['surname']
-        firstname = data['firstname']
-        email = data['email']
-        username = data['username']
-        password = data['password']
+    """ Registration function requires surname, firstname, email, username and password as mandatory parameters """
+    data = request.get_json(force=True)  # Data passed must be in json format
 
     if not data or not data['username'] and not data['password']:
         return jsonify({
             'status': 'fail',
             'message': 'Missing required parameters.'
         }), 400
+
+    surname = data['surname']
+    firstname = data['firstname']
+    email = data['email']
+    username = data['username']
+    password = data['password']
 
     if User.query.filter_by(username=username).first() or \
             User.query.filter_by(email=email).first():
@@ -94,6 +99,7 @@ def register_user():
 
 @mod.route('/users/')
 def get_user():
+    """ Retrieve a list of all users in the system """
     users = list(User.query.all())
     if not users:
         return jsonify({
@@ -116,6 +122,7 @@ def get_user():
 
 
 def get_current_user_id():
+    """ After the auth_token is verified, a user id is returned which is used to query for the user object"""
     auth_token = request.headers.get('Authorization')
     response = User.verify_auth_token(auth_token)
     if not isinstance(response, str):
