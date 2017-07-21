@@ -34,12 +34,12 @@ test:
     - COVERALLS_REPO_TOKEN=z6p6xSjXWbrYsrsyAufAql4upUr9Wxatf coveralls
 
 ## Customize deployment commands
-deployment:
-  staging:
-    branch: master
-    heroku:
-      appname: johnzbucketlist-pro
-  develop:
-    branch: develop
-    heroku:
-      appname: johnzbucketlist-staging
+#deployment:
+#  staging:
+#    branch: master
+#    heroku:
+#      appname: johnzbucketlist-pro
+#  develop:
+#    branch: develop
+#    heroku:
+#      appname: johnzbucketlist-staging
