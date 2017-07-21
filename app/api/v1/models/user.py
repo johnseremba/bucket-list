@@ -16,7 +16,7 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean, default=True)
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     date_modified = db.Column(db.DateTime, default=datetime.datetime.utcnow())
-    bucketlist = db.relationship('BucketList', backref='user_bucket_list', lazy='dynamic')
+    bucketlists = db.relationship('BucketList', backref='user_bucket_list', lazy='dynamic')
 
     def __init__(self, surname, first_name, email, username):
         self.surname = surname

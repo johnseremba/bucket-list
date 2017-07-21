@@ -18,11 +18,9 @@ def login_with_token(func):
             if not isinstance(response, str) and User.query.filter_by(id=response).first():
                 return func(*args, **kwargs)
             return jsonify({
-                'status': 'fail',
                 'message': response
             }), 401
         return jsonify({
-            'status': 'fail',
             'message': 'Provide a valid authentication token'
         }), 401
     return wrapper
@@ -33,12 +31,11 @@ def login_user():
     """ Login function requires username and password as mandatory variables """
 
     data = request.get_json(force=True)
-    username = data['username']
-    password = data['password']
+    username = data.get('username', None)
+    password = data.get('password', None)
 
     if not username or not password:
         return jsonify({
-            'status': 'fail',
             'message': 'Username and password required.'
         }), 400
 
@@ -46,13 +43,11 @@ def login_user():
 
     if not user or not user.verify_password(password):
         return jsonify({
-            'status': 'fail',
             'message': 'Invalid username or password'
         }), 403
 
     auth_token = user.generate_auth_token(user.id).decode()
     result = {
-        'status': 'success',
         'message': 'User successfully Logged in.',
         'auth_token': auth_token
     }
@@ -65,22 +60,20 @@ def register_user():
     """ Registration function requires surname, firstname, email, username and password as mandatory parameters """
     data = request.get_json(force=True)  # Data passed must be in json format
 
-    if not data or not data['username'] and not data['password']:
+    surname = data.get('surname', None)
+    firstname = data.get('firstname', None)
+    email = data.get('email', None)
+    username = data.get('username', None)
+    password = data.get('password', None)
+
+    if not surname or not firstname or not email or not username or not password:
         return jsonify({
-            'status': 'fail',
             'message': 'Missing required parameters.'
         }), 400
-
-    surname = data['surname']
-    firstname = data['firstname']
-    email = data['email']
-    username = data['username']
-    password = data['password']
 
     if User.query.filter_by(username=username).first() or \
             User.query.filter_by(email=email).first():
         return jsonify({
-            'status': 'fail',
             'message': 'User already exists!'
         }), 403
 
@@ -91,7 +84,6 @@ def register_user():
     auth_token = user.generate_auth_token(user.id).decode()
 
     return jsonify({
-        'status': 'success',
         'message': 'User registered successfully.',
         'auth_token': auth_token
         }), 201
@@ -103,11 +95,9 @@ def get_user():
     users = list(User.query.all())
     if not users:
         return jsonify({
-            'status': 'fail',
             'message': 'User not found'
         }), 404
     result = {
-        'status': 'success',
         'message': 'Users retrieved successfully'
     }
     for user in users:

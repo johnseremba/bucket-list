@@ -14,7 +14,6 @@ class TestCreateUser(BaseTestCase):
             response = self.create_user(self.USER_DETAILS)
             data = json.loads(response.data.decode())
             self.assertTrue(data is not None)
-            self.assertEqual(data['status'], 'success')
             self.assertEqual(data['message'], 'User registered successfully.')
 
     def test_token_returned(self):
@@ -30,7 +29,6 @@ class TestCreateUser(BaseTestCase):
             response = self.create_user(self.USER_DETAILS)
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 403)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'User already exists!')
 
     def test_missing_params(self):
@@ -38,7 +36,6 @@ class TestCreateUser(BaseTestCase):
             response = self.create_user({})
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'Missing required parameters.')
 
 
@@ -53,7 +50,6 @@ class TestLogin(BaseTestCase):
         with self.client:
             response = self.login_user(self.USER_CREDENTIALS['username'], self.USER_CREDENTIALS['password'])
             data = json.loads(response.data.decode())
-            self.assertEqual(data['status'], 'success')
             self.assertEqual(data['message'], 'User successfully Logged in.')
 
     def test_token_returned(self):
@@ -68,7 +64,6 @@ class TestLogin(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertTrue(response is not None)
             self.assertEqual(response.status_code, 403)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'Invalid username or password')
 
     def test_empty_credentials(self):
@@ -77,5 +72,4 @@ class TestLogin(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertTrue(response is not None)
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'Username and password required.')
