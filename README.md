@@ -18,7 +18,7 @@ http:
 
 cd into the folder and install a [virtual environment](https://virtualenv.pypa.io/en/stable/)
 
-`$ virtualenv bucket_env`
+`$ virtualenv --python=python3 bucket_env`
 
 Activate the virtual environment
 
