@@ -1,7 +1,7 @@
 import datetime
 import jwt
 from flask_login import UserMixin
-from manage import app
+from app.config import Config
 from app import db
 from passlib.apps import custom_app_context as pwd_context
 
@@ -42,7 +42,7 @@ class User(db.Model, UserMixin):
             }
             return jwt.encode(
                 payload,
-                app.config.get('SECRET_KEY'),
+                Config.SECRET_KEY,
                 algorithm='HS256'
             )
         except Exception as e:
@@ -51,7 +51,7 @@ class User(db.Model, UserMixin):
     @staticmethod
     def verify_auth_token(auth_token):
         try:
-            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+            payload = jwt.decode(auth_token, Config.SECRET_KEY)
             return payload['sub']
         except jwt.ExpiredSignatureError:
             return "Signature expired, please log in again!"
