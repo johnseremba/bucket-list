@@ -54,9 +54,9 @@ POST /api/v1/auth/login |Logs a user in | PUBLIC
 POST /api/v1/auth/register | Registers a user | PUBLIC
 POST /api/v1/bucketlists/ | Creates a new bucket list | PRIVATE
 GET /api/v1/bucketlists/ | Lists all created bucket lists | PRIVATE
-GET /api/v1/bucketlists/<id> | Gets a single bucket list with the suppled id | PRIVATE
-PUT /api/v1/bucketlists/<id> | Updates bucket list with the suppled id | PRIVATE
-DELETE /api/v1/bucketlists/<id> | Deletes bucket list with the suppled id | PRIVATE
-POST /api/v1/bucketlists/<id>/items/ | Creates a new item in bucket list | PRIVATE
-PUT /api/v1/bucketlists/<id>/items/<item_id> | Updates a bucket list item | PRIVATE
-DELETE /api/v1/bucketlists/<id>/items/<item_id> | Deletes an item in a bucket list | PRIVATE
+GET /api/v1/bucketlists/<bucketlist_id> | Gets a single bucket list with the suppled id | PRIVATE
+PUT /api/v1/bucketlists/<bucketlist_id> | Updates bucket list with the suppled id | PRIVATE
+DELETE /api/v1/bucketlists/<bucketlist_id> | Deletes bucket list with the suppled id | PRIVATE
+POST /api/v1/bucketlists/<bucketlist_id>/items/ | Creates a new item in bucket list | PRIVATE
+PUT /api/v1/bucketlists/<bucketlist_id>/items/<item_id> | Updates a bucket list item | PRIVATE
+DELETE /api/v1/bucketlists/<bucketlist_id>/items/<item_id> | Deletes an item in a bucket list | PRIVATE
