@@ -25,9 +25,16 @@ def update_item(bucketlist_id, item_id):
         }), 404
 
     data = request.get_json(force=True)
-    item.name = data['name']
-    item.description = data['description']
-    item.status = data['status']
+    name = data.get('name', None)
+    description = data.get('description', None)
+    status = data.get('status', None)
+
+    if name:
+        item.name = name
+    if description:
+        item.description = description
+    if status:
+        item.status = status
     db.session.add(item)
     db.session.commit()
 
@@ -82,14 +89,14 @@ def create_item(bucketlist_id):
             'message': 'Bucketlist does not exist.'
         }), 400
 
-    if not data:
+    name = data.get('name', None)
+    description = data.get('description', None)
+    status = data.get('status', None)
+
+    if not name or not description or not status:
         return jsonify({
             'message': 'Missing required parameters.'
         }), 400
-
-    name = data['name']
-    description = data['description']
-    status = data['status']
 
     new_item = Item(name=name, description=description, status=status, bucketlists=bucketlist.id)
     db.session.add(new_item)

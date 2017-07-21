@@ -31,8 +31,8 @@ def login_user():
     """ Login function requires username and password as mandatory variables """
 
     data = request.get_json(force=True)
-    username = data['username']
-    password = data['password']
+    username = data.get('username', None)
+    password = data.get('password', None)
 
     if not username or not password:
         return jsonify({
@@ -60,16 +60,16 @@ def register_user():
     """ Registration function requires surname, firstname, email, username and password as mandatory parameters """
     data = request.get_json(force=True)  # Data passed must be in json format
 
-    if not data or not data['username'] and not data['password']:
+    surname = data.get('surname', None)
+    firstname = data.get('firstname', None)
+    email = data.get('email', None)
+    username = data.get('username', None)
+    password = data.get('password', None)
+
+    if not surname or not firstname or not email or not username or not password:
         return jsonify({
             'message': 'Missing required parameters.'
         }), 400
-
-    surname = data['surname']
-    firstname = data['firstname']
-    email = data['email']
-    username = data['username']
-    password = data['password']
 
     if User.query.filter_by(username=username).first() or \
             User.query.filter_by(email=email).first():

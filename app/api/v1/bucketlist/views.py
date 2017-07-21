@@ -17,15 +17,15 @@ def create_bucketlist():
     created_by = get_current_user_id().id
     data = request.get_json(force=True)
 
-    if not created_by or not data:
+    name = data.get('name', None)
+    description = data.get('description', None)
+    interests = data.get('interests', None)
+
+    if not name or not description or not interests:
         return jsonify({
             'status': 'fail',
             'message': 'Missing required parameters.'
         }), 400
-
-    name = data['name']
-    description = data['description']
-    interests = data['interests']
 
     bucketlist = BucketList(created_by=created_by, name=name, description=description, interests=interests)
     db.session.add(bucketlist)
@@ -59,10 +59,17 @@ def update_bucketlist(id):
         }), 404
 
     data = request.get_json(force=True)
-    bucketlist.name = data['name']
-    bucketlist.description = data['description']
-    bucketlist.interests = data['interests']
-    bucketlist.date_modified = datetime.datetime.now()
+    name = data.get('name', None)
+    description = data.get('description', None)
+    interests = data.get('interests', None)
+    if name:
+        bucketlist.name = name
+    if description:
+        bucketlist.description = description
+    if interests:
+        bucketlist.interests = interests
+    if name or description or interests:
+        bucketlist.date_modified = datetime.datetime.now()
     db.session.add(bucketlist)
     db.session.commit()
 
