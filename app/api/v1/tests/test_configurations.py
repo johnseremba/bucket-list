@@ -23,7 +23,6 @@ class TestStagingConfig(TestCase):
         app = create_app('staging')
         self.assertFalse(app is None)
         self.assertTrue(app.config['DEBUG'] is False)
-        self.assertEqual(app.config['SQLALCHEMY_DATABASE_URI'], 'postgresql://localhost/bucketlist_stage')
 
 
 class TestProdConfig(TestCase):
