@@ -18,11 +18,9 @@ def login_with_token(func):
             if not isinstance(response, str) and User.query.filter_by(id=response).first():
                 return func(*args, **kwargs)
             return jsonify({
-                'status': 'fail',
                 'message': response
             }), 401
         return jsonify({
-            'status': 'fail',
             'message': 'Provide a valid authentication token'
         }), 401
     return wrapper
@@ -38,7 +36,6 @@ def login_user():
 
     if not username or not password:
         return jsonify({
-            'status': 'fail',
             'message': 'Username and password required.'
         }), 400
 
@@ -46,13 +43,11 @@ def login_user():
 
     if not user or not user.verify_password(password):
         return jsonify({
-            'status': 'fail',
             'message': 'Invalid username or password'
         }), 403
 
     auth_token = user.generate_auth_token(user.id).decode()
     result = {
-        'status': 'success',
         'message': 'User successfully Logged in.',
         'auth_token': auth_token
     }
@@ -67,7 +62,6 @@ def register_user():
 
     if not data or not data['username'] and not data['password']:
         return jsonify({
-            'status': 'fail',
             'message': 'Missing required parameters.'
         }), 400
 
@@ -80,7 +74,6 @@ def register_user():
     if User.query.filter_by(username=username).first() or \
             User.query.filter_by(email=email).first():
         return jsonify({
-            'status': 'fail',
             'message': 'User already exists!'
         }), 403
 
@@ -91,7 +84,6 @@ def register_user():
     auth_token = user.generate_auth_token(user.id).decode()
 
     return jsonify({
-        'status': 'success',
         'message': 'User registered successfully.',
         'auth_token': auth_token
         }), 201
@@ -103,11 +95,9 @@ def get_user():
     users = list(User.query.all())
     if not users:
         return jsonify({
-            'status': 'fail',
             'message': 'User not found'
         }), 404
     result = {
-        'status': 'success',
         'message': 'Users retrieved successfully'
     }
     for user in users:

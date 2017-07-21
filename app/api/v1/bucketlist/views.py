@@ -32,7 +32,6 @@ def create_bucketlist():
     db.session.commit()
 
     result = {
-        'status': 'success',
         'message': 'Bucketlist created successfully.',
         'data': {
             'id': bucketlist.id,
@@ -56,7 +55,6 @@ def update_bucketlist(id):
 
     if not bucketlist:
         return jsonify({
-            'status': 'fail',
             'message': 'Bucketlist not found.'
         }), 404
 
@@ -69,7 +67,6 @@ def update_bucketlist(id):
     db.session.commit()
 
     return jsonify({
-        'status': 'success',
         'message': 'Bucketlist updated successfully.'
     }), 200
 
@@ -82,14 +79,12 @@ def delete_bucketlist(id):
 
     if not bucketlist:
         return jsonify({
-            'status': 'fail',
             'message': 'Bucketlist not found.'
         }), 404
 
     db.session.delete(bucketlist)
     db.session.commit()
     return jsonify({
-        'status': 'success',
         'message': 'Bucketlist deleted successfully.'
     }), 202
 
@@ -118,7 +113,6 @@ def bucketlists(id):
 
     if not list(bucketlists):
         return jsonify({
-            'status': 'fail',
             'message': 'No bucketlist(s) found.'
         }), 404
 
@@ -126,13 +120,12 @@ def bucketlists(id):
     offset = request.args.get("offset")
     limit = request.args.get("limit")
 
-    limit = int(limit) if limit and limit <= 100 else 20
+    limit = int(limit) if limit and int(limit) <= 100 else 20
     offset = int(offset) if offset else 0
     pagination_result = paginate_data(counted, limit, offset)
     bucketlists = list(bucketlists.limit(limit).offset(offset))
 
     response = {
-        'status': 'success',
         'message': 'Bucketlist(s) retrieved successfully.',
         'pagination': pagination_result if pagination_result else {},
         'data': result
@@ -215,7 +208,7 @@ def get_bucketlist_items(bucketlist_id):
     :param bucketlist_id:
     :return:
     """
-    items = list(Item.query.filter_by(bucketlist=bucketlist_id))
+    items = list(Item.query.filter_by(bucketlists=bucketlist_id))
     result = []
     for item in items:
         result.append({

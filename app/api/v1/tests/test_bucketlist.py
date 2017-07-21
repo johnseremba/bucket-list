@@ -9,7 +9,6 @@ class TestBucketlist(BaseTestCase):
             response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'Provide a valid authentication token')
 
     def test_create(self):
@@ -18,7 +17,6 @@ class TestBucketlist(BaseTestCase):
             response = self.create_bucketlist(dict(self.BUCKETLIST_FIELDS), token)
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 201)
-            self.assertEqual(data['status'], 'success')
             self.assertEqual(data['message'], 'Bucketlist created successfully.')
 
     def test_missing_params(self):
@@ -27,7 +25,6 @@ class TestBucketlist(BaseTestCase):
             response = self.create_bucketlist({}, token)
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'Missing required parameters.')
 
     def test_update_bucketlist(self):
@@ -51,7 +48,6 @@ class TestBucketlist(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['status'], 'success')
             self.assertEqual(data['message'], 'Bucketlist updated successfully.')
 
     def test_get_bucketlist(self):
@@ -70,7 +66,6 @@ class TestBucketlist(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['status'], 'success')
             self.assertEqual(data['message'], 'Bucketlist(s) retrieved successfully.')
 
     def test_get_bucketlist_wrong_id(self):
@@ -85,7 +80,6 @@ class TestBucketlist(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'No bucketlist(s) found.')
 
     def test_delete_bucketlist(self):
@@ -104,7 +98,6 @@ class TestBucketlist(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 202)
-            self.assertEqual(data['status'], 'success')
             self.assertEqual(data['message'], 'Bucketlist deleted successfully.')
 
     def test_delete_bucketlist_wrong_id(self):
@@ -121,5 +114,4 @@ class TestBucketlist(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
-            self.assertEqual(data['status'], 'fail')
             self.assertEqual(data['message'], 'Bucketlist not found.')

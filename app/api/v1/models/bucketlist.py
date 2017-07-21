@@ -24,7 +24,7 @@ class Item(db.Model):
     date_accomplished = db.Column(db.DateTime)
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     date_modified = db.Column(db.DateTime)
-    bucketlist = db.Column(db.Integer, db.ForeignKey('bucket_list.id'), nullable=False)
+    bucketlists = db.Column(db.Integer, db.ForeignKey('bucket_list.id'), nullable=False)
 
     def __repr__(self):
         return "<Items {}>".format(self.name)
