@@ -30,4 +30,3 @@ class TestProdConfig(TestCase):
         app = create_app('production')
         self.assertFalse(app is None)
         self.assertTrue(app.config['DEBUG'] is False)
-        self.assertEqual(app.config['SQLALCHEMY_DATABASE_URI'], 'postgresql://localhost/bucketlist_prod')

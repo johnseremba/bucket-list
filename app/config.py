@@ -21,11 +21,10 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist_prod'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
 
 class StagingConfig(Config):
-    # SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/bucketlist_stage'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
 
