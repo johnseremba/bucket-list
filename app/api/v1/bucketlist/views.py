@@ -7,9 +7,10 @@ from math import ceil
 from sqlalchemy import desc
 from app import db
 from app.api.v1.models.bucketlist import (BucketList, Item)
-from app.api.v1.auth.views import (login_with_token, get_current_user_id)
+from app.api.v1.auth.views import (login_with_token, get_current_user_id, crossdomain)
 
 
+@crossdomain
 @mod.route('/', methods=['POST'])
 @login_with_token
 def create_bucketlist():
@@ -96,6 +97,7 @@ def delete_bucketlist(id):
     }), 202
 
 
+@crossdomain
 @mod.route('/', defaults={'id': None}, methods=['GET'])
 @mod.route('/<id>', methods=['GET'])
 @login_with_token

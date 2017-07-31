@@ -5,9 +5,10 @@ mod = Blueprint('api', __name__)
 from app.api.v1.models.bucketlist import Item
 from app import db
 from app.api.v1.bucketlist.views import get_bucketlist
-from app.api.v1.auth.views import login_with_token
+from app.api.v1.auth.views import login_with_token, crossdomain
 
 
+@crossdomain
 @mod.route('/<item_id>', methods=['PUT'])
 @login_with_token
 def update_item(bucketlist_id, item_id):
@@ -49,6 +50,7 @@ def update_item(bucketlist_id, item_id):
     }), 200
 
 
+@crossdomain
 @mod.route('/<item_id>', methods=['DELETE'])
 @login_with_token
 def delete_item(bucketlist_id, item_id):
@@ -73,6 +75,7 @@ def delete_item(bucketlist_id, item_id):
     }), 202
 
 
+@crossdomain
 @mod.route('/', methods=['POST'])
 @login_with_token
 def create_item(bucketlist_id):
