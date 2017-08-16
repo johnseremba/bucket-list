@@ -95,7 +95,14 @@ def login_user():
     auth_token = user.generate_auth_token(user.id).decode()
     result = {
         'message': 'User successfully Logged in.',
-        'auth_token': auth_token
+        'auth_token': auth_token,
+        'data': {
+            'id': user.id,
+            'username': user.username,
+            'firstname': user.first_name,
+            'surname': user.surname,
+            'email': user.email
+        }
     }
 
     return jsonify(result), 200
@@ -132,7 +139,14 @@ def register_user():
 
     return jsonify({
         'message': 'User registered successfully.',
-        'auth_token': auth_token
+        'auth_token': auth_token,
+        'data': {
+            'id': user.id,
+            'surname': user.surname,
+            'firstname': user.first_name,
+            'username': user.username,
+            'email': user.email
+        }
         }), 201
 
 

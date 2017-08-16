@@ -45,6 +45,7 @@ def create_bucketlist():
     return jsonify(result), 201
 
 
+@crossdomain
 @mod.route('/<id>', methods=['PUT'])
 @login_with_token
 def update_bucketlist(id):
@@ -79,6 +80,7 @@ def update_bucketlist(id):
     }), 200
 
 
+@crossdomain
 @mod.route('/<id>', methods=['DELETE'])
 @login_with_token
 def delete_bucketlist(id):
@@ -109,7 +111,7 @@ def bucketlists(id):
     :param id:
     :return:
     """
-    result = {}
+    result = []
     search_param = request.args.get("q")
 
     if search_param:
@@ -140,7 +142,8 @@ def bucketlists(id):
         'data': result
     }
     for bucketlist in bucketlists:
-        result[bucketlist.name] = {
+        result.append({
+            'name': bucketlist.name,
             'description': bucketlist.description,
             'interests': bucketlist.interests,
             'items': get_bucketlist_items(bucketlist.id),
@@ -148,7 +151,7 @@ def bucketlists(id):
             'date_modified': bucketlist.date_modified,
             'created_by': bucketlist.created_by,
             'id': bucketlist.id
-        }
+        })
     return jsonify(response), 200
 
 
