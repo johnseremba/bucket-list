@@ -29,6 +29,7 @@ def update_item(bucketlist_id, item_id):
     name = data.get('name', None)
     description = data.get('description', None)
     status = data.get('status', None)
+    date_accomplished = data.get('date_accomplished', None)
 
     if name:
         item.name = name
@@ -36,6 +37,9 @@ def update_item(bucketlist_id, item_id):
         item.description = description
     if status:
         item.status = status
+    if date_accomplished:
+        item.date_accomplished = date_accomplished
+
     db.session.add(item)
     db.session.commit()
 
@@ -106,7 +110,12 @@ def create_item(bucketlist_id):
     db.session.commit()
     result = {
         'message': 'Bucketlist item created successfully.',
-        'item_id': new_item.id
+        'data': {
+            'id': new_item.id,
+            'name': new_item.name,
+            'description': new_item.description,
+            'status': new_item.status
+        }
     }
     return jsonify(result), 201
 

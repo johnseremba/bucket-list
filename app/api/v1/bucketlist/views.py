@@ -39,6 +39,7 @@ def create_bucketlist():
             'name': bucketlist.name,
             'description': bucketlist.description,
             'interests': bucketlist.interests,
+            'date_created': bucketlist.date_created,
             'items': []
         }
     }
@@ -125,7 +126,7 @@ def bucketlists(id):
     if not list(bucketlists):
         return jsonify({
             'message': 'No bucketlist(s) found.'
-        }), 404
+        }), 200
 
     counted = bucketlists.count()
     offset = request.args.get("offset")
