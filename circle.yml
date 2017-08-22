@@ -1,0 +1,43 @@
+## Customize the test machine
+machine:
+
+  timezone:
+    Africa/Nairobi # Set the timezone
+
+  # Version of python to use
+  python:
+    version:
+      3.6.1
+
+## Customize checkout
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init # use submodules
+
+## Customize dependencies
+dependencies:
+  pre:
+    - virtualenv --python=python3 --no-site-packages buc_env
+    - source buc_env/bin/activate
+    - pip install -r requirements.txt
+    - createdb bucketlist_test
+    - python manage.py db upgrade
+
+## Customize test commands
+test:
+  override:
+    - python manage.py db migrate
+    - nosetests --rednose --with-coverage --cover-package=app --cover-erase
+    - COVERALLS_REPO_TOKEN=z6p6xSjXWbrYsrsyAufAql4upUr9Wxatf coveralls
+
+## Customize deployment commands
+#deployment:
+#  staging:
+#    branch: master
+#    heroku:
+#      appname: johnzbucketlist-pro
+#  develop:
+#    branch: develop
+#    heroku:
+#      appname: johnzbucketlist-staging
