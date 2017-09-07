@@ -1,10 +1,55 @@
-from flask import (Blueprint, jsonify, request)
-from functools import wraps
+from datetime import timedelta
+
+from flask import (Blueprint, jsonify, request, current_app, make_response)
+from functools import wraps, update_wrapper
+
+from requests.compat import basestring
 
 mod = Blueprint('auth', __name__)
 
 from app.api.v1.models.user import User
 from app import db
+
+
+def crossdomain(origin=None, methods=None, headers=None,
+                max_age=21600, attach_to_all=True,
+                automatic_options=True):
+    if methods is not None:
+        methods = ', '.join(sorted(x.upper() for x in methods))
+    if headers is not None and not isinstance(headers, basestring):
+        headers = ', '.join(x.upper() for x in headers)
+
+    if isinstance(max_age, timedelta):
+        max_age = max_age.total_seconds()
+
+    def get_methods():
+        if methods is not None:
+            return methods
+
+        options_resp = current_app.make_default_options_response()
+        return options_resp.headers['allow']
+
+    def decorator(f):
+        def wrapped_function(*args, **kwargs):
+            if automatic_options and request.method == 'OPTIONS':
+                resp = current_app.make_default_options_response()
+            else:
+                resp = make_response(f(*args, **kwargs))
+            if not attach_to_all and request.method != 'OPTIONS':
+                return resp
+
+            h = resp.headers
+
+            h['Access-Control-Allow-Origin'] = origin
+            h['Access-Control-Allow-Methods'] = get_methods()
+            h['Access-Control-Max-Age'] = str(max_age)
+            if headers is not None:
+                h['Access-Control-Allow-Headers'] = headers
+            return resp
+
+        f.provide_automatic_options = False
+        return update_wrapper(wrapped_function, f)
+    return decorator
 
 
 def login_with_token(func):
@@ -26,6 +71,7 @@ def login_with_token(func):
     return wrapper
 
 
+@crossdomain
 @mod.route('/login', methods=['POST'])
 def login_user():
     """ Login function requires username and password as mandatory variables """
@@ -49,12 +95,20 @@ def login_user():
     auth_token = user.generate_auth_token(user.id).decode()
     result = {
         'message': 'User successfully Logged in.',
-        'auth_token': auth_token
+        'auth_token': auth_token,
+        'data': {
+            'id': user.id,
+            'username': user.username,
+            'firstname': user.first_name,
+            'surname': user.surname,
+            'email': user.email
+        }
     }
 
     return jsonify(result), 200
 
 
+@crossdomain
 @mod.route('/register', methods=['POST'])
 def register_user():
     """ Registration function requires surname, firstname, email, username and password as mandatory parameters """
@@ -85,10 +139,18 @@ def register_user():
 
     return jsonify({
         'message': 'User registered successfully.',
-        'auth_token': auth_token
+        'auth_token': auth_token,
+        'data': {
+            'id': user.id,
+            'surname': user.surname,
+            'firstname': user.first_name,
+            'username': user.username,
+            'email': user.email
+        }
         }), 201
 
 
+@crossdomain
 @mod.route('/users/')
 def get_user():
     """ Retrieve a list of all users in the system """
@@ -100,14 +162,16 @@ def get_user():
     result = {
         'message': 'Users retrieved successfully'
     }
+    data = []
     for user in users:
-        result[user.id] = {
+        data.append({
+            'id': user.id,
             'surname': user.surname,
             'firstname': user.first_name,
             'email': user.email,
             'username': user.username
-        }
-
+        })
+    result['data'] = data
     return jsonify(result), 200
 
 

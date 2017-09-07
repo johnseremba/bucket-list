@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.config import configuration
+from flask_cors import CORS, cross_origin
 
 db = SQLAlchemy()
 
@@ -10,6 +11,7 @@ def create_app(environment):
     my_app.config.from_object(configuration[environment])
     my_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(my_app)
+    cors = CORS(my_app, resources={r"/api/*": {"origins": "*"}})
 
     from app.api.v1.item.views import mod as item_views
     from app.api.v1.bucketlist.views import mod as bucketlist_views

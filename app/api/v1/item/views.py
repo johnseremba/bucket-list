@@ -5,9 +5,10 @@ mod = Blueprint('api', __name__)
 from app.api.v1.models.bucketlist import Item
 from app import db
 from app.api.v1.bucketlist.views import get_bucketlist
-from app.api.v1.auth.views import login_with_token
+from app.api.v1.auth.views import login_with_token, crossdomain
 
 
+@crossdomain
 @mod.route('/<item_id>', methods=['PUT'])
 @login_with_token
 def update_item(bucketlist_id, item_id):
@@ -28,6 +29,7 @@ def update_item(bucketlist_id, item_id):
     name = data.get('name', None)
     description = data.get('description', None)
     status = data.get('status', None)
+    date_accomplished = data.get('date_accomplished', None)
 
     if name:
         item.name = name
@@ -35,6 +37,9 @@ def update_item(bucketlist_id, item_id):
         item.description = description
     if status:
         item.status = status
+    if date_accomplished:
+        item.date_accomplished = date_accomplished
+
     db.session.add(item)
     db.session.commit()
 
@@ -49,6 +54,7 @@ def update_item(bucketlist_id, item_id):
     }), 200
 
 
+@crossdomain
 @mod.route('/<item_id>', methods=['DELETE'])
 @login_with_token
 def delete_item(bucketlist_id, item_id):
@@ -73,6 +79,7 @@ def delete_item(bucketlist_id, item_id):
     }), 202
 
 
+@crossdomain
 @mod.route('/', methods=['POST'])
 @login_with_token
 def create_item(bucketlist_id):
@@ -103,7 +110,12 @@ def create_item(bucketlist_id):
     db.session.commit()
     result = {
         'message': 'Bucketlist item created successfully.',
-        'item_id': new_item.id
+        'data': {
+            'id': new_item.id,
+            'name': new_item.name,
+            'description': new_item.description,
+            'status': new_item.status
+        }
     }
     return jsonify(result), 201
 
