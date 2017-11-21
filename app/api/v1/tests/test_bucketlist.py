@@ -79,7 +79,7 @@ class TestBucketlist(BaseTestCase):
                 )
             )
             data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.status_code, 200)
             self.assertEqual(data['message'], 'No bucketlist(s) found.')
 
     def test_delete_bucketlist(self):
