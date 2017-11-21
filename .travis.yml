@@ -4,6 +4,7 @@ python:
 install:
   - pip install -r requirements.txt
   - createdb bucketlist_test
+  - createdb bucketlist
   - python manage.py db migrate
 env:
   - DB=postgres
