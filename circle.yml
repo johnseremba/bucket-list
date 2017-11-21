@@ -23,7 +23,7 @@ dependencies:
     - pip install -r requirements.txt
     - createdb bucketlist_test
     - createdb bucketlist
-    - python manage.py db upgrade
+    - python manage.py db migrate
 
 ## Customize test commands
 test:
