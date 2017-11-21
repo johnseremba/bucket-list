@@ -122,7 +122,7 @@ def create_item(bucketlist_id):
 
 def get_item(bucketlist_id, item_id):
     """
-    Gets an individual bucketlist item given the id
+    Get an individual bucketlist item given the id
     :param bucketlist_id:
     :param item_id:
     :return:
